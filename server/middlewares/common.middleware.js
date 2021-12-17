@@ -30,7 +30,7 @@ const auth = (req, res, next) => {
 };
 
 // Role based authentication middleware
-const roleBasedAuth = (role) => {
+const roleBasedAuth = (roles) => {
   return (req, res, next) => {
     if (
       req.headers &&
@@ -46,7 +46,8 @@ const roleBasedAuth = (role) => {
           } else {
             user = decode;
             req.user = user;
-            if (user.roles.includes(role))
+
+            if (!user.roles.some((r) => roles.includes(r)))
               next(
                 new CustomError(
                   errorMessages.USER_DOES_NOT_HAVE_ACCESS_PRIVILEGES,
