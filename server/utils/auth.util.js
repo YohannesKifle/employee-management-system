@@ -8,7 +8,6 @@ exports.jwtSign = async (user) => {
     token: jwt.sign(
       {
         _id: user._id,
-        fullName: user.fullName,
         email: user.email,
         roles: user.roles,
       },

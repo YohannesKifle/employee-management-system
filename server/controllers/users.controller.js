@@ -20,7 +20,7 @@ const RoleType = require("../types/role.types");
 
 /**
  * @swagger
- * /users:
+ * /users/profile:
  *   get:
  *     summary: User profile endpoint
  *     description: An endpoint for retrieving the user object of a logged in user.
@@ -33,7 +33,7 @@ const RoleType = require("../types/role.types");
  *             schema:
  *               type: object
  */
-router.get("/", auth, async (req, res, next) => {
+router.get("/profile", auth, async (req, res, next) => {
   try {
     let user = await UserRepository.get(req.user._id);
     user.hashedPassword = undefined;
@@ -42,6 +42,34 @@ router.get("/", auth, async (req, res, next) => {
     next(error);
   }
 });
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: List users
+ *     description: An endpoint for retrieving users.
+ *     tags:
+ *       [Users]
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ */
+router.get(
+  "/",
+  roleBasedAuth([RoleType.Admin, RoleType.Super_Admin]),
+  async (req, res, next) => {
+    try {
+      let users = await UserRepository.getAllUnpaginated();
+      res.json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 /**
  * @swagger
